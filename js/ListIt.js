@@ -230,31 +230,30 @@ function ManageList(tableName) {
         /*FILTER***********************************/
         var filter = '';
         Columns = this.Columns;
+
         if (this.MultipleSearch) {
-            //$("#" + this.ListName + " tbody>tr:first :input").each(function () {
-            $("#" + this.ListName + " tr:first :input").each(function () {
-                //$("#" + this.ListName + " tbody tr:first :input").each(function () {
-                if (this.Type == 'text') {
-                    if (this.value != "") {
+            $("#" + this.ListName + " tr:first :input").each(function (i, item) {
+                if (item.type == 'text') {
+                    if (item.value != "") {
                         searchOperator = "%LIKE%";
                         filterTmp = "";
-                        idField = this.id.replace('txtB_', '');
+                        idField = item.id.replace('txtB_', '');
                         for (x = 0; x < Columns.length; x++) {
                             if (Columns[x].Field == idField) {
                                 searchOperator = Columns[x].SearchOperator;
                             }
                         }
                         switch (searchOperator) {
-                            case "%LIKE%": filterTmp = idField + " like \\'%" + this.value + "%\\'"; break;
-                            case "LIKE%": filterTmp = idField + " like \\'" + this.value + "%\\'"; break;
-                            case "%LIKE": filterTmp = idField + " like \\'%" + this.value + "\\'"; break;
-                            case "=": filterTmp = idField + " = \\'" + this.value + "\\'"; break;
-                            case "!=": filterTmp = idField + " != \\'" + this.value + "\\'"; break;
-                            case ">": filterTmp = idField + " > \\'" + this.value + "\\'"; break;
-                            case "<": filterTmp = idField + " < \\'" + this.value + "\\'"; break;
-                            case ">=": filterTmp = idField + " >= \\'" + this.value + "\\'"; break;
-                            case "<=": filterTmp = idField + " <= \\'" + this.value + "\\'"; break;
-                            default: filterTmp = idField + " like \\'%" + this.value + "%\\'"; break;
+                            case "%LIKE%": filterTmp = idField + " like \\'%" + item.value + "%\\'"; break;
+                            case "LIKE%": filterTmp = idField + " like \\'" + item.value + "%\\'"; break;
+                            case "%LIKE": filterTmp = idField + " like \\'%" + item.value + "\\'"; break;
+                            case "=": filterTmp = idField + " = \\'" + item.value + "\\'"; break;
+                            case "!=": filterTmp = idField + " != \\'" + item.value + "\\'"; break;
+                            case ">": filterTmp = idField + " > \\'" + item.value + "\\'"; break;
+                            case "<": filterTmp = idField + " < \\'" + item.value + "\\'"; break;
+                            case ">=": filterTmp = idField + " >= \\'" + item.value + "\\'"; break;
+                            case "<=": filterTmp = idField + " <= \\'" + item.value + "\\'"; break;
+                            default: filterTmp = idField + " like \\'%" + item.value + "%\\'"; break;
                         }
                         if (filter == "") {
                             filter = filterTmp;
@@ -268,27 +267,47 @@ function ManageList(tableName) {
 
         }
 
+
         if (this.ExtraFilterEstructure) {
             filter += (filter ? (getExternalFilters(this.ExtraFilterEstructure) ? "AND " + getExternalFilters(this.ExtraFilterEstructure) : "") : getExternalFilters(this.ExtraFilterEstructure));
         }
         filter += getExtraFilters(this.ExtraFiltersType);
 
         var Parameters = "";
-        if (this.MultipleSearch) {
-            Parameters += "filter:'" + filter + "'";
-        }
-        if (this.Sorting) {
-            if (Parameters != "") Parameters += ", ";
-            Parameters += "sorting:'" + sorting + "'";
-        }
-        if (this.Paginate) {
-            if (Parameters != "") Parameters += ", ";
-            Parameters += "total:" + $("#" + this.LabelTotalItemsCliendID).text();
-        }
 
-        if (Parameters != "" && this.Parameters != "") Parameters += ", ";
-        Parameters = "{" + Parameters + this.Parameters + "}";
-        return Parameters;
+        if (this.RequesType == "GET") {
+            //Need to implement extra parameters in GET request
+            if (this.MultipleSearch) {
+                Parameters += "?filter='" + filter + "'";
+            }
+            if (this.Sorting) {
+                Parameters = Parameters.length > 0 ? Parameters + "&&sorting=" : "?sorting=";
+                Parameters += sorting;
+            }
+
+            if (this.Paginate) {
+                Parameters = Parameters.length > 0 ? Parameters + "&&page=" : "?page=";
+                Parameters += pageNumber;
+                Parameters += "&&per_page=" + pageSize;
+            }
+        } else {
+            if (this.MultipleSearch) {
+                Parameters += "filter:'" + filter + "'";
+            }
+            if (this.Sorting) {
+                if (Parameters != "") Parameters += ", ";
+                Parameters += "sorting:'" + sorting + "'";
+            }
+            if (this.Paginate) {
+                if (Parameters != "") Parameters += ", ";
+                pageNumber = (pageNumber ? pageNumber : 1);
+                Parameters += "page:" + pageNumber + ",per_page:" + pageSize;
+            }
+
+            if (Parameters != "" && this.Parameters != "") Parameters += ", ";
+            Parameters = "{" + Parameters + this.Parameters + "}";
+        }
+        return parameters;
 
     };
     this.FillList = function (sorting) {
@@ -339,28 +358,28 @@ function ManageList(tableName) {
         var filter = '';
         Columns = this.Columns;
         if (this.MultipleSearch) {
-            $("#" + this.ListName + " tr:first :input").each(function () {
-                if (this.Type == 'text') {
-                    if (this.value != "") {
+            $("#" + this.ListName + " tr:first :input").each(function (i, item) {
+                if (item.type == 'text') {
+                    if (item.value != "") {
                         searchOperator = "%LIKE%";
                         filterTmp = "";
-                        idField = this.id.replace('txtB_', '');
+                        idField = item.id.replace('txtB_', '');
                         for (x = 0; x < Columns.length; x++) {
                             if (Columns[x].Field == idField) {
                                 searchOperator = Columns[x].SearchOperator;
                             }
                         }
                         switch (searchOperator) {
-                            case "%LIKE%": filterTmp = idField + " like \\'%" + this.value + "%\\'"; break;
-                            case "LIKE%": filterTmp = idField + " like \\'" + this.value + "%\\'"; break;
-                            case "%LIKE": filterTmp = idField + " like \\'%" + this.value + "\\'"; break;
-                            case "=": filterTmp = idField + " = \\'" + this.value + "\\'"; break;
-                            case "!=": filterTmp = idField + " != \\'" + this.value + "\\'"; break;
-                            case ">": filterTmp = idField + " > \\'" + this.value + "\\'"; break;
-                            case "<": filterTmp = idField + " < \\'" + this.value + "\\'"; break;
-                            case ">=": filterTmp = idField + " >= \\'" + this.value + "\\'"; break;
-                            case "<=": filterTmp = idField + " <= \\'" + this.value + "\\'"; break;
-                            default: filterTmp = idField + " like \\'%" + this.value + "%\\'"; break;
+                            case "%LIKE%": filterTmp = idField + " like \\'%" + item.value + "%\\'"; break;
+                            case "LIKE%": filterTmp = idField + " like \\'" + item.value + "%\\'"; break;
+                            case "%LIKE": filterTmp = idField + " like \\'%" + item.value + "\\'"; break;
+                            case "=": filterTmp = idField + " = \\'" + item.value + "\\'"; break;
+                            case "!=": filterTmp = idField + " != \\'" + item.value + "\\'"; break;
+                            case ">": filterTmp = idField + " > \\'" + item.value + "\\'"; break;
+                            case "<": filterTmp = idField + " < \\'" + item.value + "\\'"; break;
+                            case ">=": filterTmp = idField + " >= \\'" + item.value + "\\'"; break;
+                            case "<=": filterTmp = idField + " <= \\'" + item.value + "\\'"; break;
+                            default: filterTmp = idField + " like \\'%" + item.value + "%\\'"; break;
                         }
                         if (filter == "") {
                             filter = filterTmp;
@@ -387,7 +406,7 @@ function ManageList(tableName) {
 
 
         if (this.RequesType == "GET") {
-            //Need to implement extra parameters
+            //Need to implement extra parameters in GET request
             if (this.MultipleSearch) {
                 Parameters += "?filter='" + filter + "'";
             }
@@ -398,8 +417,8 @@ function ManageList(tableName) {
 
             if (this.Paginate) {
                 Parameters = Parameters.length > 0 ? Parameters + "&&page=" : "?page=";
-                Parameters +=pageNumber;
-                Parameters +="&&per_page=" + pageSize;
+                Parameters += pageNumber;
+                Parameters += "&&per_page=" + pageSize;
             }
         } else {
             if (this.MultipleSearch) {
@@ -419,10 +438,6 @@ function ManageList(tableName) {
             Parameters = "{" + Parameters + this.Parameters + "}";
         }
 
-
-
-        // Parameters = this.RequesType == "GET" ? Object.entries(Parameters).map(e => e.join('=')).join('&') : Parameters;
-        var tempasdasd = Parameters; 
         /*LOAD DATA***********************************/
 
         $.ajax({
@@ -532,7 +547,7 @@ function ManageList(tableName) {
                                                 }
                                             }
 
-                                            _tmp = _tmp.replace("#" + atrib, " '" + JSON.stringify(v) + "' ");
+                                            _tmp = _tmp.replace("#" + atrib, " " + JSON.stringify(v) + " ");
                                         }
                                         //------------------------------------                                        
                                         _tmp = _tmp.replace("$Value", " '" + valueField + "' ");
