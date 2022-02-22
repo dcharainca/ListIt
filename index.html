@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado</title>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/ListIt.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="js/ListIt.js"></script>
+</head>
+
+<body>
+    <div id="divLoading" style="position: fixed;background-color: #00000082;z-index: 2;height: 100%;width: 100%;"></div>
+    <div class="container ">
+        <div class="form-group" style="overflow:auto">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="container-fluid ">
+                        <button class="btn btn-sm btn-primary" id="btnSearch"><i class="glyphicon glyphicon-search"></i>
+                            Buscar</button>                        
+                        <table id="tblList" class="tablaGrilla" style="width:100%;"></table>
+                        <div id="pagerList">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ajaxStart(function () {
+            $("#divLoading").show();
+        });
+        $(document).ajaxComplete(function () {
+            $("#divLoading").hide();
+        });
+        $(function () {
+            listSimple();
+
+            $("#btnSearch").on("click", function () {
+                FillList("", "tblList");
+            });
+        });
+
+        function listSimple() {
+            list = new ManageList("tblList");
+
+            /*ADD COLUMNS*************************************************************************************/
+            list.UnitMeasure = "px"; //
+            list.AddColumn("Template", false, "id", "", "50", "center", '<button class="btn btn-sm btn-primary" title="Editar" onclick="editar(' + "$Value" + ')"><i class="glyphicon glyphicon-edit"></i>  Template </button>', true);
+            list.AddColumn("Item", true, "email", "Email", "200", "left", "", true);
+            list.AddColumn("Item", true, "first_name", "Name", "200", "left", "", true);
+            list.AddColumn("Item", true, "last_name", "Last Name", "225", "left", "", true);
+            /*STYLES*********************************************/
+            list.UrlImageSelect = ""
+            list.ClassList = "listStyle";
+            list.ClassHeader = "ListItHeader";
+            list.ClassItem = "ListItRow";
+            list.ClassItemAlternative = "ListItRowAlternative";
+            list.ClassSelectedItem = "ListItSelectedRow";
+            list.ClassSearchBox = "";
+            list.ClassHeaderAsc = "ListItHeaderAsc";
+            list.ClassHeaderDesc = "ListItHeaderDesc";
+            list.ClassHeaderNormal = "";
+            list.ClassPager = "ListItPaginator";
+
+            /*METHODS**********************************************************/
+            list.UrlRequest = "https://reqres.in/api/users";
+            list.RequesType = "GET";
+            list.Parameters = ""; //FORMARTO "Variable1: valor1, Variable2: valor2"
+            list.Keys = "id";
+            list.MethodSelectedRow = "$('#btnEditar').click();";
+
+            /*SET PAGINATE OPTIONS AND MULTIPLE SEARCH********************************************************/
+            list.Paginate = true;
+            list.MultipleSearch = true;
+            list.Sorting = true;
+            list.PageSize = 10;
+            list.DivPaginateName = "pagerList";
+            list.DivSelectName = "";
+
+            /*EXTRA FILTER STRUCTURE********************************************************/
+
+            list.ExtraFilterEstructure = "";
+
+            /*LOAD********************************************************/
+            list.InitList();
+        }
+
+        function getExtraFilters() {
+            return "";
+        }
+
+        function editar(idCliente) {
+            alert("id: "+idCliente );
+        }
+
+    </script>
+</body>
+
+</html>
