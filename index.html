@@ -52,7 +52,7 @@
 
             /*ADD COLUMNS*************************************************************************************/
             list.UnitMeasure = "px"; //
-            list.AddColumn("Template", false, "id", "", "50", "center", '<button class="btn btn-sm btn-primary" title="Editar" onclick="editar(' + "$Value" + ')"><i class="glyphicon glyphicon-edit"></i>  Template </button>', true);
+            list.AddColumn("Template", false, "id", "", "50", "center", '<button class="btn btn-sm btn-primary" title="Editar" onclick="showKey(' + "$Value" + ')"><i class="glyphicon glyphicon-edit"></i>  Template </button>', true);
             list.AddColumn("Item", true, "email", "Email", "200", "left", "", true);
             list.AddColumn("Item", true, "first_name", "Name", "200", "left", "", true);
             list.AddColumn("Item", true, "last_name", "Last Name", "225", "left", "", true);
@@ -72,7 +72,7 @@
             /*METHODS**********************************************************/
             list.UrlRequest = "https://reqres.in/api/users";
             list.RequesType = "GET";
-            list.Parameters = ""; //FORMARTO "Variable1: valor1, Variable2: valor2"
+            list.Parameters = ""; //Format "field: value, field1: value1"
             list.Keys = "id";
             list.MethodSelectedRow = "$('#btnEditar').click();";
 
@@ -96,7 +96,7 @@
             return "";
         }
 
-        function editar(idCliente) {
+        function showKey(idCliente) {
             alert("id: "+idCliente );
         }
 
